@@ -1,0 +1,6 @@
+*.o
+database.bin
+
+# executable
+todoapp
+colortest
