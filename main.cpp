@@ -1,5 +1,6 @@
 #include <chrono>
 #include <cmath>
+#include <csignal>
 #include <cstddef>
 #include <cstdio>
 #include <cstdlib>
@@ -7,8 +8,8 @@
 #include <string>
 
 #include "fileio.h"
-#include "todo.h"
 #include "terminal_fancy.h"
+#include "todo.h"
 
 using namespace std;
 
@@ -249,13 +250,16 @@ void print_menu() {
         string H = fancy.escape("H", EscapeSequence::Modifier::RED);
         string U = fancy.escape("U", EscapeSequence::Modifier::BLUE);
         string S = fancy.escape("S", EscapeSequence::Modifier::GREEN);
+        string Q = fancy.escape("Q", EscapeSequence::Modifier::RED);
         cout << fancy.escape("Menu", EscapeSequence::Modifier::BLUE) << "\n";
         cout << "- [" << T << "]ambah Todo\n";
         cout << "- [" << H << "]apus Todo\n";
         cout << "- [" << U << "]pdate Todo\n";
         cout << "- Toggle [" << S << "]elesai\n";
+        cout << "- [" << Q << "]uit\n";
         cout << "Masukkan Pilihan";
-        get_input("[" + T + "/" + H + "/" + U + "/" + S + "] : ", choice);
+        get_input("[" + T + "/" + H + "/" + U + "/" + S + "/" + Q + "] : ",
+                  choice);
 
         int break_status = proccess_choice(*choice.c_str());
         if (break_status) {
@@ -263,8 +267,18 @@ void print_menu() {
         }
     }
 }
+void sigint_handler(int signal) {
+    // Cleanup kode di sini
+    cout << "\nlain kali ketik q untuk keluar" << endl;
+    db.write(items);
+    db.~BinaryFileHanlder();
+    // clear resource
+    items.~TodoList();
+    exit(0);
+}
 
 int main() {
+    signal(SIGINT, sigint_handler);
     db.read(items);
 
     print_menu();
