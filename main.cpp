@@ -100,15 +100,14 @@ void print_table_todo() {
         size_t pos = 0;
         size_t start = 0;
 
-        string line;
-
+        TodoItem new_item = {item.id, item.title, item.complete};
         if (item.title.length() <= title_max_len) {
             print_row(item, true);
         } else {
             while ((pos = item.title.find(' ', prev_pos + 1)) != string::npos) {
                 if (pos - start > title_max_len) {
-                    line = item.title.substr(start, prev_pos - start);
-                    print_row(item, line_counter == 0);
+                    new_item.title = item.title.substr(start, prev_pos - start);
+                    print_row(new_item, line_counter == 0);
 
                     start = prev_pos + 1;
                     line_counter++;
@@ -117,8 +116,8 @@ void print_table_todo() {
             }
 
             // print kalimat yang tersisa
-            line = item.title.substr(start, prev_pos - start);
-            print_row(item, false);
+            new_item.title = item.title.substr(start, item.title.length() - start);
+            print_row(new_item, false);
         }
 
         // jika item terakhir
