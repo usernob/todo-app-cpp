@@ -97,20 +97,6 @@ TodoItem *TodoList::bot() const {
     return &tail->data;
 }
 
-TodoItem *TodoList::get(const unsigned int index) const {
-    if (is_outbound(index) || is_empty()) {
-        return nullptr;
-    }
-    if (index == 0) {
-        return top();
-    }
-    if (index == length - 1) {
-        return bot();
-    }
-    Node *curr = get_node_at(index);
-    return &curr->data;
-}
-
 TodoItem *TodoList::search_id(const unsigned int id) const {
     if (is_empty()) {
         return nullptr;
@@ -150,20 +136,6 @@ bool TodoList::delete_id(const unsigned int id) {
         current = current->next;
     }
     return false;
-}
-
-bool TodoList::is_outbound(unsigned int index) const {
-    return index > length - 1;
-}
-
-Node *TodoList::get_node_at(unsigned int index) const {
-    unsigned int count = 0;
-    Node *current = head;
-    while (count < index && current != nullptr) {
-        current = current->next;
-        count++;
-    }
-    return current;
 }
 
 // fungsi Iterator agar bisa di loop secara otomatis

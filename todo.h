@@ -1,7 +1,6 @@
 #ifndef SINGLY_LINKED_LISvoid_H
 #define SINGLY_LINKED_LISvoid_H
 
-#include <cstddef>
 #include <string>
 
 struct TodoItem {
@@ -22,9 +21,6 @@ private:
     Node *tail = nullptr;
     unsigned int length = 0;
 
-    bool is_outbound(const unsigned int index) const;
-    Node *get_node_at(const unsigned int index) const;
-
 public:
     TodoList();
     TodoList(Node *head);
@@ -37,7 +33,6 @@ public:
 
     TodoItem *top() const;
     TodoItem *bot() const;
-    TodoItem *get(const unsigned int index) const;
 
     TodoItem *search_id(const unsigned int id) const;
     bool delete_id(const unsigned int id);
