@@ -6,6 +6,10 @@
 #include <iostream>
 #include <string>
 
+#if defined(_WIN32)
+#include <windows.h>
+#endif
+
 #include "fileio.h"
 #include "terminal_fancy.h"
 #include "todo.h"
@@ -116,7 +120,8 @@ void print_table_todo() {
             }
 
             // print kalimat yang tersisa
-            new_item.title = item.title.substr(start, item.title.length() - start);
+            new_item.title =
+                item.title.substr(start, item.title.length() - start);
             print_row(new_item, false);
         }
 
@@ -282,6 +287,9 @@ void sigint_handler(int signal) {
 }
 
 int main() {
+#if defined(_WIN32)
+    SetConsoleOutputCP(CP_UTF8);
+#endif
     signal(SIGINT, sigint_handler);
     todo_db.read(items);
 

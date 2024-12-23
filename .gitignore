@@ -1,6 +1,8 @@
 *.o
 database.bin
+.vscode
 
 # executable
 todoapp
 colortest
+*.exe
