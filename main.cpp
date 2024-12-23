@@ -12,7 +12,7 @@
 
 using namespace std;
 
-static BinaryFileHanlder db("database.bin");
+static BinaryFileHanlder todo_db("database.bin");
 static TodoList items;
 static EscapeSequence fancy;
 
@@ -71,7 +71,9 @@ void print_row(const TodoItem &item, const bool is_firstrow) {
             item.complete
                 ? fancy.escape("selesai", EscapeSequence::Modifier::GREEN)
                 : fancy.escape("belum selesai", EscapeSequence::Modifier::RED);
-        cout << status << string(item.complete ? 7 : 1, ' ');
+        // maksimal panjang status adalah status_max_len,
+        // 7 adalah status_max_len - length "selesai"
+        cout << status << string(item.complete ? 7 : 1, ' ');  // NOLINT
     } else {
         cout << string(status_max_len, ' ');
     }
@@ -94,14 +96,16 @@ void print_table_todo() {
         const TodoItem item = *it;
         size_t line_counter = 0;
 
-        size_t prev_pos = 0, pos = 0, start = 0;
+        size_t prev_pos = 0;
+        size_t pos = 0;
+        size_t start = 0;
 
         string line;
 
         if (item.title.length() <= title_max_len) {
             print_row(item, true);
         } else {
-            while ((pos = item.title.find(" ", prev_pos + 1)) != string::npos) {
+            while ((pos = item.title.find(' ', prev_pos + 1)) != string::npos) {
                 if (pos - start > title_max_len) {
                     line = item.title.substr(start, prev_pos - start);
                     print_row(item, line_counter == 0);
@@ -138,19 +142,19 @@ void add_todo() {
     // jika nullptr atau kosong maka set last_id ke 1
     unsigned int last_id = last_todo == nullptr ? 1 : last_todo->id;
 
-    unsigned int new_id = ((last_id ^ epoch) + 1) % 10000;
+    unsigned int new_id = ((last_id ^ epoch) + 1) % 10000;  // NOLINT
 
     TodoItem data{new_id, title, false};
     items.append(data);
     show_message("Todo berhasil ditambahkan", EscapeSequence::Modifier::GREEN);
 }
 
-bool get_id(unsigned int &id) {
+bool get_id(unsigned int &todo_id) {
     string id_str;
     get_input("Masukkan id todo : ", id_str);
 
     try {
-        id = stoi(id_str);
+        todo_id = stoi(id_str);
     } catch (exception &e) {
         show_message("id yang anda masukkan tidak valid",
                      EscapeSequence::Modifier::RED);
@@ -160,13 +164,13 @@ bool get_id(unsigned int &id) {
 }
 
 void update_todo() {
-    unsigned int id;
+    unsigned int todo_id;
 
-    if (!get_id(id)) {
+    if (!get_id(todo_id)) {
         return;
     }
 
-    TodoItem *item = items.search_id(id);
+    TodoItem *item = items.search_id(todo_id);
     if (item == nullptr) {
         show_message("id tidak ditemukan", EscapeSequence::Modifier::RED);
         return;
@@ -177,13 +181,13 @@ void update_todo() {
 }
 
 void delete_todo() {
-    unsigned int id;
+    unsigned int todo_id;
 
-    if (!get_id(id)) {
+    if (!get_id(todo_id)) {
         return;
     }
 
-    if (items.delete_id(id)) {
+    if (items.delete_id(todo_id)) {
         show_message("Todo telah dihapus", EscapeSequence::Modifier::GREEN);
         return;
     }
@@ -191,12 +195,12 @@ void delete_todo() {
 }
 
 void toggle_status() {
-    unsigned int id;
-    if (!get_id(id)) {
+    unsigned int todo_id;
+    if (!get_id(todo_id)) {
         return;
     }
 
-    TodoItem *item = items.search_id(id);
+    TodoItem *item = items.search_id(todo_id);
     if (item == nullptr) {
         show_message("id tidak ditemukan", EscapeSequence::Modifier::RED);
         return;
@@ -232,7 +236,7 @@ int proccess_choice(const char &choice) {
 }
 
 void print_menu() {
-    while (1) {
+    while (true) {
         // clear terminal
 #if defined(_WIN32)
         system("cls");
@@ -245,6 +249,7 @@ void print_menu() {
         print_table_todo();
 
         string choice;
+        // NOLINTBEGIN
         string T = fancy.escape("T", EscapeSequence::Modifier::CYAN);
         string H = fancy.escape("H", EscapeSequence::Modifier::RED);
         string U = fancy.escape("U", EscapeSequence::Modifier::BLUE);
@@ -259,9 +264,10 @@ void print_menu() {
         cout << "Masukkan Pilihan";
         get_input("[" + T + "/" + H + "/" + U + "/" + S + "/" + Q + "] : ",
                   choice);
+        // NOLINTEND
 
         int break_status = proccess_choice(*choice.c_str());
-        if (break_status) {
+        if (break_status != 0) {
             break;
         }
     }
@@ -269,8 +275,8 @@ void print_menu() {
 void sigint_handler(int signal) {
     // Cleanup kode di sini
     cout << "\nlain kali ketik q untuk keluar" << endl;
-    db.write(items);
-    db.~BinaryFileHanlder();
+    todo_db.write(items);
+    todo_db.~BinaryFileHanlder();
     // clear resource
     items.~TodoList();
     exit(0);
@@ -278,9 +284,9 @@ void sigint_handler(int signal) {
 
 int main() {
     signal(SIGINT, sigint_handler);
-    db.read(items);
+    todo_db.read(items);
 
     print_menu();
-    db.write(items);
+    todo_db.write(items);
     return 0;
 }

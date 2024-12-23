@@ -25,7 +25,7 @@ public:
         static const char* UNDERLINE;
         static const char* RESET;
     };
-    std::string escape(const char* input, const char* mod);
+    std::string escape(const char* input, const char* mod) const;
 };
 
 #endif  // !TERMINAL_FANCY_H

@@ -14,11 +14,10 @@ EscapeSequence::EscapeSequence() {
         is_support_esc_seq = false;
         return;
     }
-    is_support_esc_seq = isatty(STDOUT_FILENO);
+    is_support_esc_seq = (isatty(STDOUT_FILENO) != 0);
 }
 
-
-std::string EscapeSequence::escape(const char* input, const char* mod) {
+std::string EscapeSequence::escape(const char* input, const char* mod) const {
     // jika tidak support maka kembalikan lagi input
     if (!is_support_esc_seq) {
         return input;

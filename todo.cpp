@@ -97,13 +97,13 @@ TodoItem *TodoList::bot() const {
     return &tail->data;
 }
 
-TodoItem *TodoList::search_id(const unsigned int id) const {
+TodoItem *TodoList::search_id(const unsigned int todo_id) const {
     if (is_empty()) {
         return nullptr;
     }
     Node *current = head;
     while (current != nullptr) {
-        if (current->data.id == id) {
+        if (current->data.id == todo_id) {
             return &current->data;
         }
         current = current->next;
@@ -111,21 +111,21 @@ TodoItem *TodoList::search_id(const unsigned int id) const {
     return nullptr;
 }
 
-bool TodoList::delete_id(const unsigned int id) {
+bool TodoList::delete_id(const unsigned int todo_id) {
     if (is_empty()) {
         return false;
     }
-    if (head->data.id == id) {
+    if (head->data.id == todo_id) {
         pop();
         return true;
     }
-    if (tail->data.id == id) {
+    if (tail->data.id == todo_id) {
         pop_back();
         return true;
     }
     Node *current = head;
     while (current->next != nullptr) {
-        if (current->next->data.id == id) {
+        if (current->next->data.id == todo_id) {
             Node *temp = current->next;
             current->next = temp->next;
             delete temp;
@@ -140,12 +140,12 @@ bool TodoList::delete_id(const unsigned int id) {
 
 // fungsi Iterator agar bisa di loop secara otomatis
 typename TodoList::Iterator TodoList::begin() const { return Iterator(head); }
-typename TodoList::Iterator TodoList::end() const { return Iterator(nullptr); }
+typename TodoList::Iterator TodoList::end() const { return Iterator(nullptr); } // NOLINT
 
 TodoList::Iterator::Iterator(Node *start) : current(start) {}
 
 typename TodoList::Iterator &TodoList::Iterator::operator++() {
-    if (current) {
+    if (current != nullptr) {
         current = current->next;
     }
     return *this;

@@ -12,7 +12,7 @@ struct TodoItem {
 struct Node {
     TodoItem data;
     Node *next;
-    Node(TodoItem data) : data(data), next(nullptr) {}
+    Node(TodoItem data) : data(data), next(nullptr) {} // NOLINT
 };
 
 class TodoList {
@@ -34,8 +34,8 @@ public:
     TodoItem *top() const;
     TodoItem *bot() const;
 
-    TodoItem *search_id(const unsigned int id) const;
-    bool delete_id(const unsigned int id);
+    TodoItem *search_id(unsigned int todo_id) const;
+    bool delete_id(unsigned int todo_id);
 
     void clear();
     unsigned int size() const noexcept;
